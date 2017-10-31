@@ -149,12 +149,6 @@ class Visage: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         let pixelBuffer = Unmanaged<CVPixelBuffer>.fromOpaque(opaqueBuffer).takeUnretainedValue()
         let sourceImage = CIImage(cvPixelBuffer: pixelBuffer, options: nil)
         
-        /*if let orientation = sourceImage.properties[kCGImagePropertyOrientation as String] as AnyObject? {
-            options = [CIDetectorSmile : true as AnyObject, CIDetectorEyeBlink: true as AnyObject, CIDetectorImageOrientation : orientation as AnyObject]
-            print(orientation)
-        } else {
-            options = [CIDetectorSmile : true as AnyObject, CIDetectorEyeBlink: true as AnyObject]
-        }*/
         options = [CIDetectorSmile : true as AnyObject, CIDetectorEyeBlink: true as AnyObject, CIDetectorImageOrientation : 6 as AnyObject]
         
         let features = self.faceDetector!.features(in: sourceImage, options: options)
@@ -174,7 +168,6 @@ class Visage: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
             for feature in features as! [CIFaceFeature] {
                 let faceBoundsFromImage = feature.bounds
                 
-                //faceBox.frame = CGRect(x: UIScreen.main.bounds.width - 50, y: UIScreen.main.bounds.height - 60, width: 50, height: 60)
                 let uiBounds = UIScreen.main.bounds
                 let realWidth = faceBoundsFromImage.size.height * uiBounds.width / sourceImage.extent.size.height
                 let realHeight = faceBoundsFromImage.size.width * uiBounds.height / sourceImage.extent.size.width
@@ -191,17 +184,16 @@ class Visage: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
                     }
                     faceAngle = CGFloat(feature.faceAngle)
                 }
-                
+
                 if (feature.hasLeftEyePosition) {
                     let leftEyePositionFromImage = feature.leftEyePosition
                     leftEyePosition = CGPoint(x: uiBounds.width - leftEyePositionFromImage.y * uiBounds.width / sourceImage.extent.size.height,
                                               y: leftEyePositionFromImage.x * uiBounds.height / sourceImage.extent.size.width)
                 }
-                
                 if (feature.hasRightEyePosition) {
                     let rightEyePositionFromImage = feature.rightEyePosition
                     rightEyePosition = CGPoint(x: uiBounds.width - rightEyePositionFromImage.y * uiBounds.width / sourceImage.extent.size.height,
-                                              y: rightEyePositionFromImage.x * uiBounds.height / sourceImage.extent.size.width)
+                                               y: rightEyePositionFromImage.x * uiBounds.height / sourceImage.extent.size.width)
                 }
                 
                 if (feature.hasMouthPosition) {
